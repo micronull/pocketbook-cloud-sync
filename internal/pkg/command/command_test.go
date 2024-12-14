@@ -61,8 +61,10 @@ func TestCommand_Run_Help(t *testing.T) {
 	}{
 		{"default", []string{}},
 		{"help", []string{"help"}},
+		{"help help", []string{"help", "help"}},
 		{"--help", []string{"--help"}},
 		{"-h", []string{"-h"}},
+		{"-help", []string{"-help"}},
 	}
 
 	for _, tt := range tests {

@@ -98,7 +98,7 @@ func isHelpFlag(name string) bool {
 	name = strings.TrimSpace(name)
 
 	switch name {
-	case "-h", "--help":
+	case "-h", "--help", "-help":
 		return true
 	}
 
