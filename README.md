@@ -1,2 +1,3 @@
-# pocketbook-cloud-sync
-Backup your library from pocketbook cloud.
+# PocketBook Cloud Sync
+
+Backup your library from [PocketBook Cloud](https://cloud.pocketbook.digital).
