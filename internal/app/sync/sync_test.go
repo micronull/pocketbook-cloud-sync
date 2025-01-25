@@ -102,8 +102,10 @@ func TestApp_Sync_Error_Directory(t *testing.T) {
 	err := os.Mkdir("test", 0o666)
 	require.NoError(t, err)
 
+	t.Cleanup(func() { _ = os.Remove("test") })
+
 	app := sync.New()
 	err = app.Sync(context.Background(), params)
 
-	require.ErrorIs(t, err, os.ErrNotExist)
+	require.ErrorIs(t, err, os.ErrPermission)
 }
