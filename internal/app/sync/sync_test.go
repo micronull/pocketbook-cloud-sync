@@ -88,7 +88,7 @@ func TestApp_Sync_Error_NonExistingDirectory(t *testing.T) {
 	require.ErrorIs(t, err, os.ErrNotExist)
 }
 
-func TestApp_Sync_Error_Directory(t *testing.T) {
+func TestApp_Sync_Error_ErrPermissionDirectory(t *testing.T) {
 	t.Parallel()
 
 	params := sync.Params{
