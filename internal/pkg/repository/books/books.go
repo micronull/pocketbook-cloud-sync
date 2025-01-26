@@ -3,6 +3,7 @@ package books
 
 import (
 	"context"
+	"fmt"
 
 	pbclient "github.com/micronull/pocketbook-cloud-client"
 
@@ -30,7 +31,10 @@ func New(client client, login, password string) *Repository {
 }
 
 func (r Repository) Books(ctx context.Context) ([]domain.Book, error) {
-	providers, _ := r.client.Providers(ctx, r.login)
+	providers, err := r.client.Providers(ctx, r.login)
+	if err != nil {
+		return nil, fmt.Errorf("get providers: %w", err)
+	}
 
 	books := make([]domain.Book, 0)
 

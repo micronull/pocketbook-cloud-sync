@@ -2,6 +2,7 @@ package books_test
 
 import (
 	"context"
+	"errors"
 	"math/rand/v2"
 	"testing"
 
@@ -108,4 +109,21 @@ func TestRepository_Books(t *testing.T) {
 	}
 
 	require.Equal(t, expected, got)
+}
+
+var errStub = errors.New("stub error")
+
+func TestRepository_Books_Error_Provider(t *testing.T) {
+	t.Parallel()
+
+	mockCtrl := gomock.NewController(t)
+	clientMock := mocks.NewClient(mockCtrl)
+	repo := books.New(clientMock, "", "")
+
+	clientMock.EXPECT().
+		Providers(gomock.Any(), gomock.Any()).
+		Return(nil, errStub)
+
+	_, err := repo.Books(context.Background())
+	require.ErrorIs(t, err, errStub)
 }
