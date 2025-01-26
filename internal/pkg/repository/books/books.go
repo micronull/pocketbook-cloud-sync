@@ -41,16 +41,29 @@ func (r Repository) Books(ctx context.Context) ([]domain.Book, error) {
 	for i := 0; i < len(providers); i++ {
 		provider := providers[i]
 
-		token, _ := r.client.Login(ctx, pbclient.LoginRequest{
+		token, err := r.client.Login(ctx, pbclient.LoginRequest{
 			ShopID:   provider.ShopID,
 			UserName: r.login,
 			Password: r.pswd,
 			Provider: provider.Alias,
 		})
+		if err != nil {
+			return nil, fmt.Errorf("login: %w", err)
+		}
 
-		pbooks, _ := r.client.Books(ctx, token.AccessToken, 0, 0)
+		pbooks, err := r.client.Books(ctx, token.AccessToken, 0, 0)
+		if err != nil {
+			return nil, fmt.Errorf("get books count: %w", err)
+		}
 
-		pbooks, _ = r.client.Books(ctx, token.AccessToken, pbooks.Total, 0)
+		if pbooks.Total == 0 {
+			continue
+		}
+
+		pbooks, err = r.client.Books(ctx, token.AccessToken, pbooks.Total, 0)
+		if err != nil {
+			return nil, fmt.Errorf("get books: %w", err)
+		}
 
 		for n := 0; n < len(pbooks.Books); n++ {
 			pbook := pbooks.Books[n]
