@@ -2,6 +2,7 @@ package books_test
 
 import (
 	"context"
+	"math/rand/v2"
 	"testing"
 
 	pbclient "github.com/micronull/pocketbook-cloud-client"
@@ -56,12 +57,14 @@ func TestRepository_Books(t *testing.T) {
 		).
 		Return(pbclient.Token{AccessToken: "token-2"}, nil)
 
-	clientMock.EXPECT().
-		Books(gomock.Any(), "token-1", 0, 0).
-		Return(pbclient.Books{Total: 1}, nil)
+	nr := rand.N(100)
 
 	clientMock.EXPECT().
-		Books(gomock.Any(), "token-1", 1, 0).
+		Books(gomock.Any(), "token-1", 0, 0).
+		Return(pbclient.Books{Total: nr}, nil)
+
+	clientMock.EXPECT().
+		Books(gomock.Any(), "token-1", nr, 0).
 		Return(pbclient.Books{
 			Total: 1,
 			Books: []pbclient.Book{
@@ -72,12 +75,14 @@ func TestRepository_Books(t *testing.T) {
 			},
 		}, nil)
 
-	clientMock.EXPECT().
-		Books(gomock.Any(), "token-2", 0, 0).
-		Return(pbclient.Books{Total: 1}, nil)
+	nr = rand.N(100)
 
 	clientMock.EXPECT().
-		Books(gomock.Any(), "token-2", 1, 0).
+		Books(gomock.Any(), "token-2", 0, 0).
+		Return(pbclient.Books{Total: nr}, nil)
+
+	clientMock.EXPECT().
+		Books(gomock.Any(), "token-2", nr, 0).
 		Return(pbclient.Books{
 			Total: 1,
 			Books: []pbclient.Book{

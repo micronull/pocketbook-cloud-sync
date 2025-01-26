@@ -30,5 +30,33 @@ func New(client client, login, password string) *Repository {
 }
 
 func (r Repository) Books(ctx context.Context) ([]domain.Book, error) {
-	return nil, nil
+	providers, _ := r.client.Providers(ctx, r.login)
+
+	books := make([]domain.Book, 0)
+
+	for i := 0; i < len(providers); i++ {
+		provider := providers[i]
+
+		token, _ := r.client.Login(ctx, pbclient.LoginRequest{
+			ShopID:   provider.ShopID,
+			UserName: r.login,
+			Password: r.pswd,
+			Provider: provider.Alias,
+		})
+
+		pbooks, _ := r.client.Books(ctx, token.AccessToken, 0, 0)
+
+		pbooks, _ = r.client.Books(ctx, token.AccessToken, pbooks.Total, 0)
+
+		for n := 0; n < len(pbooks.Books); n++ {
+			pbook := pbooks.Books[n]
+
+			books = append(books, domain.Book{
+				FileName: pbook.Name,
+				Link:     pbook.Link,
+			})
+		}
+	}
+
+	return books, nil
 }
