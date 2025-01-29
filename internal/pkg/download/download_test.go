@@ -1,4 +1,4 @@
-package donwload_test
+package download_test
 
 import (
 	"net/http"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"pocketbook-cloud-sync/internal/pkg/donwload"
+	"pocketbook-cloud-sync/internal/pkg/download"
 )
 
 func TestDownload(t *testing.T) {
@@ -23,7 +23,7 @@ func TestDownload(t *testing.T) {
 
 	t.Cleanup(srv.Close)
 
-	err := donwload.Download(srv.URL+"/test.txt", "test_dest.txt")
+	err := download.Download(srv.URL+"/test.txt", "test_dest.txt")
 	require.NoError(t, err)
 
 	t.Cleanup(func() { _ = os.Remove("test_dest.txt") })
@@ -41,6 +41,6 @@ func TestDownload_StatusNotOk(t *testing.T) {
 
 	t.Cleanup(srv.Close)
 
-	err := donwload.Download(srv.URL+"/test.txt", "test_dest.txt")
+	err := download.Download(srv.URL+"/test.txt", "test_dest.txt")
 	require.ErrorContains(t, err, "418 I'm a teapot")
 }
