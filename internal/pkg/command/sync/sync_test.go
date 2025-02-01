@@ -1,16 +1,17 @@
 package sync_test
 
 import (
+	"context"
 	"errors"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/mock/gomock"
 
-	syncApp "pocketbook-cloud-sync/internal/app/sync"
 	"pocketbook-cloud-sync/internal/pkg/command/sync"
-	"pocketbook-cloud-sync/internal/pkg/command/sync/mocks"
+	"pocketbook-cloud-sync/internal/pkg/command/sync/factory"
 )
 
 func TestSync_Description(t *testing.T) {
@@ -46,12 +47,127 @@ func TestSync_Help(t *testing.T) {
 	assert.Equal(t, expected, cmd.Help())
 }
 
+func defaultArgs() []string {
+	return []string{
+		"-client-id", "some-id",
+		"-client-secret", "some-secret",
+		"-dir", "testdata",
+		"-password", "some-password",
+		"-username", "some-username",
+	}
+}
+
+type mockSync struct {
+	mock.Mock
+}
+
+func (m *mockSync) Sync(ctx context.Context) error {
+	return m.Called(ctx).Error(0)
+}
+
 func TestSync_Run(t *testing.T) {
 	t.Parallel()
 
-	mockCtrl := gomock.NewController(t)
-	appMock := mocks.NewApp(mockCtrl)
-	cmd := sync.New(appMock)
+	appMock := &mockSync{}
+	cmd := sync.New(func(config factory.Configurator) factory.Synchronizer {
+		assert.Equal(t, "some-id", config.ClientID())
+		assert.Equal(t, "some-secret", config.ClientSecret())
+		assert.Equal(t, "testdata", config.Directory())
+		assert.Equal(t, "some-password", config.Password())
+		assert.Equal(t, "some-username", config.UserName())
+
+		return appMock
+	})
+
+	args := defaultArgs()
+
+	appMock.On("Sync", mock.Anything).Return(nil)
+
+	err := cmd.Run(args)
+	require.NoError(t, err)
+
+	appMock.AssertExpectations(t)
+}
+
+func TestSync_Run_Error(t *testing.T) {
+	t.Parallel()
+
+	appMock := &mockSync{}
+	cmd := sync.New(func(factory.Configurator) factory.Synchronizer {
+		return appMock
+	})
+	errExpected := errors.New("some error")
+
+	appMock.On("Sync", mock.Anything).Return(errExpected)
+
+	args := defaultArgs()
+
+	err := cmd.Run(args)
+	require.ErrorIs(t, err, errExpected)
+}
+
+func TestSync_Run_Error_Validation(t *testing.T) {
+	t.Parallel()
+
+	tests := [...]struct {
+		name   string
+		args   []string
+		expect string
+	}{
+		{
+			name:   "empty args",
+			args:   []string{},
+			expect: "validate: client-id is required",
+		},
+		{
+			name:   "empty client-secret",
+			args:   []string{"-client-id", "some-id"},
+			expect: "validate: client-secret is required",
+		},
+		{
+			name: "empty username",
+			args: []string{
+				"-client-id", "some-id",
+				"-client-secret", "some-secret",
+			},
+			expect: "validate: username is required",
+		},
+		{
+			name: "empty password",
+			args: []string{
+				"-client-id", "some-id",
+				"-client-secret", "some-secret",
+				"-username", "some-username",
+			},
+			expect: "validate: password is required",
+		},
+		{
+			name: "empty dir",
+			args: []string{
+				"-client-id", "some-id",
+				"-client-secret", "some-secret",
+				"-username", "some-username",
+				"-dir", "",
+				"-password", "some-password",
+			},
+			expect: "validate: dir is required",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			app := sync.New(nil)
+
+			err := app.Run(tt.args)
+			require.EqualError(t, err, tt.expect)
+		})
+	}
+}
+
+func TestSync_Run_Error_NonExistingDirectory(t *testing.T) {
+	t.Parallel()
 
 	args := []string{
 		"-client-id", "some-id",
@@ -61,34 +177,31 @@ func TestSync_Run(t *testing.T) {
 		"-username", "some-username",
 	}
 
-	expected := syncApp.Params{
-		ClientID:     "some-id",
-		ClientSecret: "some-secret",
-		Dir:          "some-dir",
-		Password:     "some-password",
-		UserName:     "some-username",
-	}
+	app := sync.New(nil)
 
-	appMock.EXPECT().
-		Sync(gomock.Any(), expected).
-		Return(nil)
+	err := app.Run(args)
 
-	err := cmd.Run(args)
-	require.NoError(t, err)
+	require.ErrorIs(t, err, os.ErrNotExist)
 }
 
-func TestSync_Run_Error(t *testing.T) {
+func TestSync_Run_Error_ErrPermissionDirectory(t *testing.T) {
 	t.Parallel()
 
-	mockCtrl := gomock.NewController(t)
-	appMock := mocks.NewApp(mockCtrl)
-	cmd := sync.New(appMock)
-	errExpected := errors.New("some error")
+	args := []string{
+		"-client-id", "some-id",
+		"-client-secret", "some-secret",
+		"-dir", "test",
+		"-password", "some-password",
+		"-username", "some-username",
+	}
 
-	appMock.EXPECT().
-		Sync(gomock.Any(), gomock.Any()).
-		Return(errExpected)
+	err := os.Mkdir("test", 0o666)
+	require.NoError(t, err)
 
-	err := cmd.Run(nil)
-	require.ErrorIs(t, err, errExpected)
+	t.Cleanup(func() { _ = os.Remove("test") })
+
+	app := sync.New(nil)
+	err = app.Run(args)
+
+	require.ErrorIs(t, err, os.ErrPermission)
 }
