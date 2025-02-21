@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"log/slog"
 	"os"
 
@@ -10,6 +11,8 @@ import (
 )
 
 func main() {
+	log.SetOutput(os.Stdout)
+
 	cmd := command.New()
 	cmd.AddCommand("sync", sync.New(factory.Factory))
 
