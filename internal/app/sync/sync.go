@@ -38,6 +38,8 @@ func New(books books, dir string, opts ...Option) *App {
 }
 
 func (a App) Sync(ctx context.Context) error {
+	slog.Info("Welcome! My repository https://github.com/micronull/pocketbook-cloud-client")
+
 	exist, err := readDir(a.dir)
 	if err != nil {
 		return fmt.Errorf("read exists files: %w", err)
@@ -54,6 +56,8 @@ func (a App) Sync(ctx context.Context) error {
 
 	for _, bk := range bks {
 		if exist.exist(bk.FileName) {
+			slog.Debug("skipped book, this is exists", "name", bk.FileName)
+
 			continue
 		}
 
