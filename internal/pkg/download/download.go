@@ -1,14 +1,20 @@
 package download
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 )
 
-func Download(url, destination string) error {
-	rsp, err := http.Get(url)
+func Download(ctx context.Context, url, destination string) error {
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	if err != nil {
+		return fmt.Errorf("create request: %w", err)
+	}
+
+	rsp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("http GET %s: %w", url, err)
 	}

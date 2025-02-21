@@ -1,7 +1,6 @@
 package books_test
 
 import (
-	"context"
 	"errors"
 	"math/rand/v2"
 	"testing"
@@ -97,7 +96,7 @@ func TestRepository_Books(t *testing.T) {
 			}, nil),
 	)
 
-	got, err := repo.Books(context.Background())
+	got, err := repo.Books(t.Context())
 	require.NoError(t, err)
 
 	expected := []domain.Book{
@@ -127,7 +126,7 @@ func TestRepository_Books_Error_Provider(t *testing.T) {
 		Providers(gomock.Any(), gomock.Any()).
 		Return(nil, errStub)
 
-	_, err := repo.Books(context.Background())
+	_, err := repo.Books(t.Context())
 	require.ErrorIs(t, err, errStub)
 }
 
@@ -160,7 +159,7 @@ func TestRepository_Books_Providers_Empty(t *testing.T) {
 				Providers(gomock.Any(), gomock.Any()).
 				Return(tt.items, nil)
 
-			got, err := repo.Books(context.Background())
+			got, err := repo.Books(t.Context())
 			require.NoError(t, err)
 
 			assert.Empty(t, got)
@@ -183,7 +182,7 @@ func TestRepository_Books_Error_Login(t *testing.T) {
 		Login(gomock.Any(), gomock.Any()).
 		Return(pbclient.Token{}, errStub)
 
-	_, err := repo.Books(context.Background())
+	_, err := repo.Books(t.Context())
 	require.ErrorIs(t, err, errStub)
 }
 
@@ -206,7 +205,7 @@ func TestRepository_Books_Error_BooksCount(t *testing.T) {
 		Books(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(pbclient.Books{}, errStub)
 
-	_, err := repo.Books(context.Background())
+	_, err := repo.Books(t.Context())
 	require.ErrorIs(t, err, errStub)
 }
 
@@ -229,7 +228,7 @@ func TestRepository_Books_BooksCount_Zero(t *testing.T) {
 		Books(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(pbclient.Books{}, nil)
 
-	got, err := repo.Books(context.Background())
+	got, err := repo.Books(t.Context())
 	require.NoError(t, err)
 
 	assert.Empty(t, got)
@@ -260,6 +259,6 @@ func TestRepository_Books_Error_Books(t *testing.T) {
 		Books(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(pbclient.Books{}, errStub)
 
-	_, err := repo.Books(context.Background())
+	_, err := repo.Books(t.Context())
 	require.ErrorIs(t, err, errStub)
 }

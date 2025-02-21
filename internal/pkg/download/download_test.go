@@ -1,6 +1,7 @@
 package download_test
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -23,7 +24,7 @@ func TestDownload(t *testing.T) {
 
 	t.Cleanup(srv.Close)
 
-	err := download.Download(srv.URL+"/test.txt", "test_dest.txt")
+	err := download.Download(t.Context(), srv.URL+"/test.txt", "test_dest.txt")
 	require.NoError(t, err)
 
 	t.Cleanup(func() { _ = os.Remove("test_dest.txt") })
@@ -41,6 +42,16 @@ func TestDownload_StatusNotOk(t *testing.T) {
 
 	t.Cleanup(srv.Close)
 
-	err := download.Download(srv.URL+"/test.txt", "test_dest.txt")
+	err := download.Download(t.Context(), srv.URL+"/test.txt", "test_dest.txt")
 	require.ErrorContains(t, err, "418 I'm a teapot")
+}
+
+func TestDownload_ContextCanceled(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	err := download.Download(ctx, "http://foo", "bar")
+	require.ErrorIs(t, err, context.Canceled)
 }
