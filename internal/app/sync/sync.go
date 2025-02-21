@@ -3,6 +3,7 @@ package sync
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -56,7 +57,11 @@ func (a App) Sync(ctx context.Context) error {
 			continue
 		}
 
-		if err = a.downloader(ctx, bk.Link, filepath.Join(a.dir, bk.FileName)); err != nil {
+		path := filepath.Join(a.dir, bk.FileName)
+
+		slog.Debug("start download", "file_name", bk.FileName, "path", path, "link", bk.Link)
+
+		if err = a.downloader(ctx, bk.Link, path); err != nil {
 			return fmt.Errorf("download %s: %w", bk.FileName, err)
 		}
 	}
