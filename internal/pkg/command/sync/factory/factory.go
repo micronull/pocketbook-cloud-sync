@@ -3,7 +3,6 @@ package factory
 
 import (
 	"context"
-	"net/http"
 
 	pc "github.com/micronull/pocketbook-cloud-client"
 
@@ -27,7 +26,6 @@ func Factory(config Configurator) Synchronizer {
 	return sync.New(
 		books.New(
 			pc.New(
-				pc.WithHTTPClient(&http.Client{Transport: http.DefaultTransport}),
 				pc.WithClientID(config.ClientID()),
 				pc.WithClientSecret(config.ClientSecret()),
 			),
