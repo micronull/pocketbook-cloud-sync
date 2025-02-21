@@ -262,3 +262,40 @@ func TestRepository_Books_Error_Books(t *testing.T) {
 	_, err := repo.Books(t.Context())
 	require.ErrorIs(t, err, errStub)
 }
+
+func TestRepository_Books_EmptyLink(t *testing.T) {
+	t.Parallel()
+
+	mockCtrl := gomock.NewController(t)
+	clientMock := mocks.NewClient(mockCtrl)
+	repo := books.New(clientMock, "", "")
+
+	clientMock.EXPECT().
+		Providers(gomock.Any(), gomock.Any()).
+		Return([]pbclient.Provider{{}}, nil)
+
+	clientMock.EXPECT().
+		Login(gomock.Any(), gomock.Any()).
+		Return(pbclient.Token{}, nil)
+
+	clientMock.EXPECT().
+		Books(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(pbclient.Books{
+			Total: 1,
+		}, nil)
+
+	clientMock.EXPECT().
+		Books(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+		Return(pbclient.Books{
+			Total: 1,
+			Books: []pbclient.Book{
+				{
+					Link: "",
+					Name: "unknown.txt",
+				},
+			},
+		}, nil)
+
+	_, err := repo.Books(t.Context())
+	require.NoError(t, err)
+}

@@ -4,6 +4,7 @@ package books
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	pbclient "github.com/micronull/pocketbook-cloud-client"
 
@@ -56,6 +57,13 @@ func (r Repository) Books(ctx context.Context) ([]domain.Book, error) {
 			return nil, fmt.Errorf("get books count: %w", err)
 		}
 
+		slog.Debug("books",
+			"total", pbooks.Total,
+			"provider_shop_id", provider.ShopID,
+			"provider_name", provider.Name,
+			"provider_alias", provider.Alias,
+		)
+
 		if pbooks.Total == 0 {
 			continue
 		}
@@ -67,6 +75,12 @@ func (r Repository) Books(ctx context.Context) ([]domain.Book, error) {
 
 		for n := 0; n < len(pbooks.Books); n++ {
 			pbook := pbooks.Books[n]
+
+			if pbook.Link == "" {
+				slog.Warn("book link is empty", "book_id", pbook.ID, "book_name", pbook.Name)
+
+				continue
+			}
 
 			books = append(books, domain.Book{
 				FileName: pbook.Name,
