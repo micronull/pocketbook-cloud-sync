@@ -6,8 +6,8 @@ import (
 
 	pc "github.com/micronull/pocketbook-cloud-client"
 
-	"pocketbook-cloud-sync/internal/app/sync"
-	"pocketbook-cloud-sync/internal/pkg/repository/books"
+	"github.com/micronull/pocketbook-cloud-sync/internal/app/sync"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/repository/books"
 )
 
 type Synchronizer interface {

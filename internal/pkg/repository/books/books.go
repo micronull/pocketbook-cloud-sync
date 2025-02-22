@@ -8,7 +8,7 @@ import (
 
 	pbclient "github.com/micronull/pocketbook-cloud-client"
 
-	"pocketbook-cloud-sync/internal/pkg/domain"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/domain"
 )
 
 type client interface {

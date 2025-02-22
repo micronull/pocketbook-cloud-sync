@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 
-	"pocketbook-cloud-sync/internal/pkg/command"
-	"pocketbook-cloud-sync/internal/pkg/command/mocks"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/command"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/command/mocks"
 )
 
 func TestCommand_Run(t *testing.T) {

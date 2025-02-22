@@ -10,9 +10,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 
-	"pocketbook-cloud-sync/internal/pkg/domain"
-	"pocketbook-cloud-sync/internal/pkg/repository/books"
-	"pocketbook-cloud-sync/internal/pkg/repository/books/mocks"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/domain"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/repository/books"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/repository/books/mocks"
 )
 
 func TestRepository_Books(t *testing.T) {

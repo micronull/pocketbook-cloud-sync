@@ -6,9 +6,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	"pocketbook-cloud-sync/internal/app/sync"
-	"pocketbook-cloud-sync/internal/pkg/command/sync/factory"
-	"pocketbook-cloud-sync/internal/pkg/command/sync/factory/mocks"
+	"github.com/micronull/pocketbook-cloud-sync/internal/app/sync"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/command/sync/factory"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/command/sync/factory/mocks"
 )
 
 func TestFactory(t *testing.T) {

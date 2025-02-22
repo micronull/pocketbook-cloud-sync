@@ -5,10 +5,10 @@ import (
 	"log/slog"
 	"os"
 
-	"pocketbook-cloud-sync/internal/pkg/command"
-	"pocketbook-cloud-sync/internal/pkg/command/sync"
-	"pocketbook-cloud-sync/internal/pkg/command/sync/factory"
-	"pocketbook-cloud-sync/internal/pkg/command/version"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/command"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/command/sync"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/command/sync/factory"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/command/version"
 )
 
 func main() {

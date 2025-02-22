@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"pocketbook-cloud-sync/internal/pkg/version"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/version"
 )
 
 func TestVersion(t *testing.T) {

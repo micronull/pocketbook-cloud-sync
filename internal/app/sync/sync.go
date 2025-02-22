@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"pocketbook-cloud-sync/internal/pkg/domain"
-	"pocketbook-cloud-sync/internal/pkg/download"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/domain"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/download"
 )
 
 //go:generate mockgen -source $GOFILE -typed -destination mocks/$GOFILE -package mocks -typed -mock_names books=Books

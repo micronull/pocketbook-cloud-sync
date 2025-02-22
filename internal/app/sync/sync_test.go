@@ -7,9 +7,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	"pocketbook-cloud-sync/internal/app/sync"
-	"pocketbook-cloud-sync/internal/app/sync/mocks"
-	"pocketbook-cloud-sync/internal/pkg/domain"
+	"github.com/micronull/pocketbook-cloud-sync/internal/app/sync"
+	"github.com/micronull/pocketbook-cloud-sync/internal/app/sync/mocks"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/domain"
 )
 
 func TestApp_Sync(t *testing.T) {

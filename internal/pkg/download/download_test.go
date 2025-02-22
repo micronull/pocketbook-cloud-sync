@@ -9,7 +9,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"pocketbook-cloud-sync/internal/pkg/download"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/download"
 )
 
 func TestDownload(t *testing.T) {

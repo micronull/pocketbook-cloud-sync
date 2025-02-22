@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"pocketbook-cloud-sync/internal/pkg/command/sync"
-	"pocketbook-cloud-sync/internal/pkg/command/sync/factory"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/command/sync"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/command/sync/factory"
 )
 
 func TestSync_Description(t *testing.T) {

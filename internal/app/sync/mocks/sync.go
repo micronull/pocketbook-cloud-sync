@@ -11,7 +11,7 @@ package mocks
 
 import (
 	context "context"
-	domain "pocketbook-cloud-sync/internal/pkg/domain"
+	domain "github.com/micronull/pocketbook-cloud-sync/internal/pkg/domain"
 	reflect "reflect"
 
 	gomock "go.uber.org/mock/gomock"

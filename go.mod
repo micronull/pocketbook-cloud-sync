@@ -1,4 +1,4 @@
-module pocketbook-cloud-sync
+module github.com/micronull/pocketbook-cloud-sync
 
 go 1.24
 

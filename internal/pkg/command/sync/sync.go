@@ -12,7 +12,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"pocketbook-cloud-sync/internal/pkg/command/sync/factory"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/command/sync/factory"
 )
 
 type factorySynchronizer func(config factory.Configurator) factory.Synchronizer

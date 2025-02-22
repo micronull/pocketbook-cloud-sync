@@ -3,7 +3,7 @@ package version
 import (
 	"fmt"
 
-	"pocketbook-cloud-sync/internal/pkg/version"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/version"
 )
 
 type Version struct{}
