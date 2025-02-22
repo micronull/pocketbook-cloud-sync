@@ -8,6 +8,7 @@ import (
 	"pocketbook-cloud-sync/internal/pkg/command"
 	"pocketbook-cloud-sync/internal/pkg/command/sync"
 	"pocketbook-cloud-sync/internal/pkg/command/sync/factory"
+	"pocketbook-cloud-sync/internal/pkg/command/version"
 )
 
 func main() {
@@ -15,6 +16,7 @@ func main() {
 
 	cmd := command.New()
 	cmd.AddCommand("sync", sync.New(factory.Factory))
+	cmd.AddCommand("version", version.New())
 
 	if err := cmd.Run(os.Args[1:]); err != nil {
 		slog.Error(err.Error())
