@@ -4,7 +4,7 @@
 name: Go test
 
 on:
-  create
+  push
 
 jobs:
   test:
