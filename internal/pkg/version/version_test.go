@@ -11,5 +11,5 @@ import (
 func TestVersion(t *testing.T) {
 	t.Parallel()
 
-	assert.Equal(t, "unknown", version.Version())
+	assert.Equal(t, "undefined", version.Version())
 }

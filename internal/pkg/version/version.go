@@ -1,6 +1,6 @@
 package version
 
-var version = "unknown"
+var version = "undefined"
 
 func Version() string {
 	return version
