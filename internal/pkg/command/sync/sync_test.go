@@ -76,6 +76,7 @@ func (m *mockSync) Sync(ctx context.Context) error {
 
 func TestSync_Run(t *testing.T) {
 	t.Parallel()
+	_ = os.Mkdir("testdata", 0777)
 
 	appMock := &mockSync{}
 	cmd := sync.New(func(config factory.Configurator) factory.Synchronizer {
@@ -99,6 +100,8 @@ func TestSync_Run(t *testing.T) {
 }
 
 func TestSync_Run_Env(t *testing.T) {
+	_ = os.Mkdir("testdata", 0777)
+
 	appMock := &mockSync{}
 	cmd := sync.New(func(config factory.Configurator) factory.Synchronizer {
 		assert.Equal(t, "some-id from env", config.ClientID())
@@ -135,6 +138,7 @@ func TestSync_Run_Env(t *testing.T) {
 
 func TestSync_Run_Error(t *testing.T) {
 	t.Parallel()
+	_ = os.Mkdir("testdata", 0777)
 
 	appMock := &mockSync{}
 	cmd := sync.New(func(factory.Configurator) factory.Synchronizer {
