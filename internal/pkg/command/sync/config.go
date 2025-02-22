@@ -5,8 +5,9 @@ type config struct {
 	clientSecret string
 	userName     string
 	password     string
-	debug        bool
 	dir          string
+	debug        bool
+	env          bool
 }
 
 func (c *config) ClientID() string {

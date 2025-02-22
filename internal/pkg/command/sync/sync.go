@@ -28,6 +28,15 @@ func New(factory factorySynchronizer) *Sync {
 
 	cfg := &config{}
 
+	flags.BoolVar(&cfg.env, "env", false, "Enable environment variables mode.\n"+
+		"Ignores all command-line flags and loads values from environment variables:\n"+
+		"PBC_CLIENT_ID as -client-id\n"+
+		"PBC_CLIENT_SECRET as -client-secret\n"+
+		"PBC_USERNAME as -username\n"+
+		"PBC_PASSWORD as -password\n"+
+		"DEBUG as -debug\n"+
+		"DIR as -dir")
+
 	flags.StringVar(&cfg.clientID, "client-id", "", "Client ID of PocketBook Cloud API.\n"+
 		"Read the readme to find out how to get it.")
 
@@ -71,12 +80,17 @@ func (s Sync) Run(args []string) error {
 		return fmt.Errorf("flag parse: %v", err)
 	}
 
+	if s.cfg.env {
+		s.cfg = loadConfigFromEnv()
+	}
+
 	if err := validation(*s.cfg); err != nil {
 		return fmt.Errorf("validate: %w", err)
 	}
 
 	if s.cfg.debug {
 		slog.SetLogLoggerLevel(slog.LevelDebug)
+		slog.Debug("debug enabled")
 	}
 
 	ctx, cancel := createContext()
@@ -142,4 +156,17 @@ func dirCheck(dir string) error {
 	_ = os.Remove(dir + "/" + tmpFile)
 
 	return nil
+}
+
+func loadConfigFromEnv() *config {
+	cfg := &config{}
+
+	cfg.clientID = os.Getenv("PBC_CLIENT_ID")
+	cfg.clientSecret = os.Getenv("PBC_CLIENT_SECRET")
+	cfg.userName = os.Getenv("PBC_USERNAME")
+	cfg.password = os.Getenv("PBC_PASSWORD")
+	cfg.debug = os.Getenv("DEBUG") == "true"
+	cfg.dir = os.Getenv("DIR")
+
+	return cfg
 }
