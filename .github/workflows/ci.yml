@@ -2,10 +2,14 @@ name: ci
 
 on:
   push:
+    tags:
+      - '*'
 
 jobs:
   docker:
     runs-on: ubuntu-latest
+    env:
+      APP_VERSION: ${{ github.ref_name }}
     steps:
       -
         name: Login to Docker Hub
