@@ -1,5 +1,7 @@
 # PocketBook Cloud Sync
 
+[![Docker Pulls](https://img.shields.io/docker/pulls/micronull/pbcsync)](https://hub.docker.com/r/micronull/pbcsync)
+
 Backup your library from [PocketBook Cloud](https://cloud.pocketbook.digital).
 
 ## Usage
