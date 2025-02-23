@@ -1,0 +1,13 @@
+# Changelog
+
+## [1.0.1] - 2025-02-24
+
+### Fixed
+
+- Re-uploading files due to different spelling of unicode characters.
+
+## [1.0.0] - 2025-02-23
+
+### Added
+
+- Base functional.

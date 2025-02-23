@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"golang.org/x/text/unicode/norm"
+
 	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/domain"
 	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/download"
 )
@@ -38,12 +40,12 @@ func New(books books, dir string, opts ...Option) *App {
 }
 
 func (a App) Sync(ctx context.Context) error {
-	slog.Info("Welcome! My repository https://github.com/micronull/pocketbook-cloud-client")
-
 	exist, err := readDir(a.dir)
 	if err != nil {
 		return fmt.Errorf("read exists files: %w", err)
 	}
+
+	slog.Info("start sync")
 
 	bks, err := a.books.Books(ctx)
 	if err != nil {
@@ -51,24 +53,32 @@ func (a App) Sync(ctx context.Context) error {
 	}
 
 	if len(bks) == 0 {
+		slog.Warn("no books found")
+
 		return nil
 	}
+
+	var skipped int
 
 	for _, bk := range bks {
 		if exist.exist(bk.FileName) {
 			slog.Debug("skipped book, this is exists", "name", bk.FileName)
+
+			skipped++
 
 			continue
 		}
 
 		path := filepath.Join(a.dir, bk.FileName)
 
-		slog.Debug("start download", "file_name", bk.FileName, "path", path, "link", bk.Link)
+		slog.Debug("download", "file_name", bk.FileName, "path", path, "link", bk.Link)
 
 		if err = a.downloader(ctx, bk.Link, path); err != nil {
 			return fmt.Errorf("download %s: %w", bk.FileName, err)
 		}
 	}
+
+	slog.Info("finished sync", "total", len(bks), "skipped", skipped)
 
 	return nil
 }
@@ -85,7 +95,7 @@ func readDir(dir string) (files, error) {
 
 	for _, fl := range fls {
 		if !fl.IsDir() {
-			f.f[fl.Name()] = struct{}{}
+			f.f[norm.NFC.String(fl.Name())] = struct{}{}
 		}
 	}
 
@@ -97,7 +107,7 @@ type files struct {
 }
 
 func (e files) exist(file string) bool {
-	_, ok := e.f[file]
+	_, ok := e.f[norm.NFC.String(file)]
 
 	return ok
 }

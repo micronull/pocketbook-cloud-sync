@@ -70,6 +70,37 @@ func TestApp_Sync(t *testing.T) {
 	}
 }
 
+func TestApp_Sync_NFCNormalization(t *testing.T) {
+	t.Parallel()
+
+	mockCtrl := gomock.NewController(t)
+	booksMock := mocks.NewBooks(mockCtrl)
+
+	const dir = "testdata"
+
+	opts := []sync.Option{
+		sync.WithDownloader(func(_ context.Context, url, destination string) error {
+			t.Fail()
+
+			return nil
+		}),
+	}
+
+	app := sync.New(booksMock, dir, opts...)
+
+	booksMock.EXPECT().
+		Books(gomock.Any()).
+		Return([]domain.Book{
+			{
+				FileName: "й.txt",
+				Link:     "https://foo/bar",
+			},
+		}, nil)
+
+	err := app.Sync(t.Context())
+	assert.NoError(t, err)
+}
+
 func TestApp_Sync_EmptyBooks(t *testing.T) {
 	t.Parallel()
 
