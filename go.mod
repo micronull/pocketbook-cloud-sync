@@ -5,6 +5,7 @@ go 1.24
 require (
 	github.com/micronull/pocketbook-cloud-client v1.0.0
 	github.com/stretchr/testify v1.10.0
+	github.com/thejerf/slogassert v0.3.4
 	go.uber.org/mock v0.5.0
 	golang.org/x/text v0.22.0
 )

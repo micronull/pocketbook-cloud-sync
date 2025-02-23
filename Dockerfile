@@ -28,6 +28,7 @@ FROM scratch AS runtime
 ARG APP_VERSION="undefined@docker"
 
 ENV DIR="/books"
+ENV DAEMON="true"
 
 LABEL \
     # Docs: <https://github.com/opencontainers/image-spec/blob/master/annotations.md>

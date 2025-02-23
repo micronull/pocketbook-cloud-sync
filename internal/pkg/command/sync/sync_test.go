@@ -34,6 +34,11 @@ func TestSync_Help(t *testing.T) {
   -client-secret string
     	Client Secret of PocketBook Cloud API.
     	Read the readme to find out how to get it.
+  -daemon
+    	Enable daemon mode. Use the daemon-timeout flag for setting sync interval.
+  -daemon-timeout duration
+    	Timeout for sync operation. 
+    	Used only daemon mode. (default 24h0m0s)
   -debug
     	Enable debug output.
   -dir string
@@ -47,6 +52,8 @@ func TestSync_Help(t *testing.T) {
     	PBC_PASSWORD as -password
     	DEBUG as -debug
     	DIR as -dir
+    	DAEMON as -daemon
+    	DAEMON_TIMEOUT as -daemon-timeout
   -password string
     	Password from your PocketBook Cloud account.
   -username string

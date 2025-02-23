@@ -11,9 +11,13 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/command/sync/factory"
+	"github.com/micronull/pocketbook-cloud-sync/internal/pkg/daemon"
 )
+
+const daemonTimeoutDefault = time.Hour * 24
 
 type factorySynchronizer func(config factory.Configurator) factory.Synchronizer
 
@@ -35,7 +39,9 @@ func New(factory factorySynchronizer) *Sync {
 		"PBC_USERNAME as -username\n"+
 		"PBC_PASSWORD as -password\n"+
 		"DEBUG as -debug\n"+
-		"DIR as -dir")
+		"DIR as -dir\n"+
+		"DAEMON as -daemon\n"+
+		"DAEMON_TIMEOUT as -daemon-timeout")
 
 	flags.StringVar(&cfg.clientID, "client-id", "", "Client ID of PocketBook Cloud API.\n"+
 		"Read the readme to find out how to get it.")
@@ -50,6 +56,11 @@ func New(factory factorySynchronizer) *Sync {
 	flags.StringVar(&cfg.dir, "dir", "books", "Directory to sync files.")
 
 	flags.BoolVar(&cfg.debug, "debug", false, "Enable debug output.")
+
+	flags.BoolVar(&cfg.daemon, "daemon", false, "Enable daemon mode. Use the daemon-timeout flag for setting sync interval.")
+
+	flags.DurationVar(&cfg.daemonTimeout, "daemon-timeout", daemonTimeoutDefault, "Timeout for sync operation. \n"+
+		"Used only daemon mode.")
 
 	return &Sync{
 		flags:   flags,
@@ -72,7 +83,9 @@ func (s Sync) Help() string {
 }
 
 func (s Sync) Run(args []string) error {
-	if err := s.flags.Parse(args); err != nil {
+	var err error
+
+	if err = s.flags.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
 			return nil
 		}
@@ -81,7 +94,9 @@ func (s Sync) Run(args []string) error {
 	}
 
 	if s.cfg.env {
-		s.cfg = loadConfigFromEnv()
+		if s.cfg, err = loadConfigFromEnv(); err != nil {
+			return fmt.Errorf("load config from env: %v", err)
+		}
 	}
 
 	if err := validation(*s.cfg); err != nil {
@@ -97,6 +112,13 @@ func (s Sync) Run(args []string) error {
 	defer cancel()
 
 	app := s.factory(s.cfg)
+
+	slog.Info("Welcome! I will be glad to receive your star: https://github.com/micronull/pocketbook-cloud-client")
+
+	if s.cfg.daemon {
+		slog.Debug("starting daemon mode", "timeout", s.cfg.daemonTimeout)
+		app = factory.Synchronizer(daemon.New(s.cfg.daemonTimeout, app))
+	}
 
 	if err := app.Sync(ctx); err != nil {
 		return fmt.Errorf("run: %w", err)
@@ -158,15 +180,27 @@ func dirCheck(dir string) error {
 	return nil
 }
 
-func loadConfigFromEnv() *config {
-	cfg := &config{}
+func loadConfigFromEnv() (*config, error) {
+	cfg := &config{
+		daemonTimeout: daemonTimeoutDefault,
+	}
+
+	var err error
 
 	cfg.clientID = os.Getenv("PBC_CLIENT_ID")
 	cfg.clientSecret = os.Getenv("PBC_CLIENT_SECRET")
 	cfg.userName = os.Getenv("PBC_USERNAME")
 	cfg.password = os.Getenv("PBC_PASSWORD")
 	cfg.debug = os.Getenv("DEBUG") == "true"
+	cfg.daemon = os.Getenv("DAEMON") == "true"
+
+	if dt := os.Getenv("DAEMON_TIMEOUT"); dt != "" {
+		if cfg.daemonTimeout, err = time.ParseDuration(dt); err != nil {
+			return nil, fmt.Errorf("set daemon timeout: %w", err)
+		}
+	}
+
 	cfg.dir = os.Getenv("DIR")
 
-	return cfg
+	return cfg, err
 }

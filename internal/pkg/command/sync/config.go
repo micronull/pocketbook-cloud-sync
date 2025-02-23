@@ -1,13 +1,17 @@
 package sync
 
+import "time"
+
 type config struct {
-	clientID     string
-	clientSecret string
-	userName     string
-	password     string
-	dir          string
-	debug        bool
-	env          bool
+	clientID      string
+	clientSecret  string
+	userName      string
+	password      string
+	dir           string
+	debug         bool
+	env           bool
+	daemon        bool
+	daemonTimeout time.Duration
 }
 
 func (c *config) ClientID() string {
