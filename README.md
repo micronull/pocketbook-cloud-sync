@@ -9,8 +9,7 @@ Backup your library from [PocketBook Cloud](https://cloud.pocketbook.digital).
 ### Docker
 
 ```shell
-mkdri books
-docker run \
+mkdir books && docker run \
 --rm \
 -v books:/books \
 -e PBC_CLIENT_ID=qNAx1RDb \
