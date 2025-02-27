@@ -2,8 +2,9 @@ name: coverage badge
 
 on:
   push:
-    branches:
-      - master
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   test:
@@ -23,7 +24,7 @@ jobs:
 
       - name: Run Test
         run: |
-          go test -v ./... -covermode=count -coverprofile=coverage.out
+          go test ./... -covermode=count -coverprofile=coverage.out
           go tool cover -func=coverage.out -o=coverage.out
 
       - name: Go Coverage Badge
@@ -31,19 +32,13 @@ jobs:
         with:
           filename: coverage.out
 
-      - name: Verify Changed files
-        uses: tj-actions/verify-changed-files@v17
-        id: verify-changed-files
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        id: auto-commit-action
         with:
-          files: README.md
-
-      - name: Commit changes
-        if: steps.verify-changed-files.outputs.files_changed == 'true'
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add README.md
-          git commit -m "chore: Updated coverage badge."
+          commit_message: Apply Code Coverage Badge
+          skip_fetch: true
+          skip_checkout: true
+          file_pattern: ./README.md
 
       - name: Push changes
         if: steps.verify-changed-files.outputs.files_changed == 'true'
