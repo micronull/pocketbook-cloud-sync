@@ -1,16 +1,19 @@
 name: coverage badge
 
+permissions:
+  contents: write
+  pull-requests: write
+
 on:
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     name: Update coverage badge
     steps:
       - name: Checkout
