@@ -1,7 +1,7 @@
 name: coverage badge
 
 on:
-  pull_request:
+  push:
     branches:
       - master
 
